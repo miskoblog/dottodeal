@@ -340,6 +340,8 @@ function factsOf(f) {
   };
 }
 const upFirst = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+// A business name that already ends in a full stop ("Summit Plumbing Co.") must not produce ".." when a template adds its own.
+const tidy = (t) => t.replace(/(?<!\.)\.\.(?!\.)/g, ".");
 // address forms that read naturally whether or not the owner's name was entered
 function addr(f) {
   return {
@@ -684,7 +686,7 @@ function buildReply(i) {
   return {
     category: cls.top, label: OBJ_LABELS[cls.top], hits: cls.hits,
     also: cls.also.map((a) => OBJ_LABELS[a.cat]),
-    reply: tpl[tone](f, q), tip: tpl.tip, owner: f.owner, biz: f.biz,
+    reply: tidy(tpl[tone](f, q)), tip: tpl.tip, owner: f.owner, biz: f.biz,
   };
 }
 
@@ -736,7 +738,7 @@ function buildCadence(i) {
   const touches = off.map((o, idx) => {
     const date = idx === 0 ? start : bizDay(addDays(start, o));
     const status = date < today ? "overdue" : date === today ? "today" : "upcoming";
-    return { n: idx + 1, date, channel: CHANNEL_LABEL[meta[idx][1]], purpose: meta[idx][0], draft: drafts[idx], status };
+    return { n: idx + 1, date, channel: CHANNEL_LABEL[meta[idx][1]], purpose: meta[idx][0], draft: tidy(drafts[idx]), status };
   });
   return { biz: f.biz, owner: f.owner, start, temp, touches };
 }
@@ -821,7 +823,7 @@ function buildWalk(i) {
   const agenda = steps.map((s, idx) => {
     const start = `${Math.floor(t / 60)}:${pad2(t % 60)}`;
     t += secs[idx];
-    return { ...s, start, secs: secs[idx] };
+    return { ...s, talk: tidy(s.talk), start, secs: secs[idx] };
   });
   const middle = [cluster, competitor, moneyStep, lead[0]].sort((a, b) => b.weight - a.weight);
   const short = [opener.key, middle[0].key, middle[1].key, close.key];
@@ -836,7 +838,7 @@ DEFS.push({
   placeholder: "Fill in the scan facts above, then press Build my walk-through.",
   compute: buildWalk,
   render: (d) => `
-    <p class="out-p">A ${Math.floor(d.total / 60)}-minute agenda for <strong>${escapeHtml(d.biz)}</strong>. Lead with the two fixes the scan supports most.</p>
+    <p class="out-p">A ${Math.floor(d.total / 60)}-minute agenda for <strong>${escapeHtml(d.biz)}</strong>${d.biz.endsWith(".") ? "" : "."} Lead with the two fixes the scan supports most.</p>
     ${d.agenda.map((s) => `<div class="agenda-step"><div class="when">${s.start}<small>${s.secs}s</small></div><div><h4>${escapeHtml(s.title)}${d.short.includes(s.key) ? '<span class="badge due">Keep if short</span>' : ""}</h4><p>${escapeHtml(s.talk)}</p></div></div>`).join("")}
     <div class="tip"><b>Only two minutes?</b> Do these: ${d.agenda.filter((s) => d.short.includes(s.key)).map((s) => escapeHtml(s.title.toLowerCase())).join(" → ")}.</div>`,
   text: (d) => d.agenda.map((s) => `${s.start} — ${s.title}\n${s.talk}`).join("\n\n"),
