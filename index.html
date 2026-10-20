@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dot to Deal</title>
+  <meta name="description" content="Dot to Deal: decide who to scan, know what to say, and price the fix. A free bonus for ProfitMaps AI." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='4' y1='2' x2='28' y2='30' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%234636E3'/%3E%3Cstop offset='1' stop-color='%237C3AED'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Ccircle cx='9.5' cy='22' r='2.8' fill='%23FAF9F6'/%3E%3Cpath d='M12.5 19.5l4.5-4.5' stroke='%23FAF9F6' stroke-width='2.4' stroke-linecap='round' fill='none'/%3E%3Cpath d='M17 11.5l3.2 3.2 6-7' stroke='%23FAF9F6' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="gate" id="gate">
+  <form class="gate-card" id="gateForm">
+    <span class="gate-mark" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 32 32">
+        <defs><linearGradient id="dtdGateMark" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4636E3" /><stop offset="1" stop-color="#7C3AED" /></linearGradient></defs>
+        <rect width="32" height="32" rx="8" fill="url(#dtdGateMark)" />
+        <circle cx="9.5" cy="22" r="2.8" fill="#FAF9F6" />
+        <path d="M12.5 19.5l4.5-4.5" stroke="#FAF9F6" stroke-width="2.4" stroke-linecap="round" fill="none" />
+        <path d="M17 11.5l3.2 3.2 6-7" stroke="#FAF9F6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      </svg>
+    </span>
+    <h1>Dot to Deal</h1>
+    <p>Enter the access password to open this bonus.</p>
+    <label class="sr-only" for="gatePassword">Password</label>
+    <input type="password" id="gatePassword" placeholder="Password" autocomplete="off" autofocus />
+    <button type="submit" class="primary-btn">Unlock</button>
+    <p class="gate-error" id="gateError">That password isn't right — try again.</p>
+  </form>
+</div>
+<script>
+  try {
+    if (localStorage.getItem("dtd_access") === "granted") document.getElementById("gate").classList.add("is-unlocked");
+    var storedTheme = localStorage.getItem("dtd_theme");
+    if (storedTheme === "dark" || storedTheme === "light") document.documentElement.setAttribute("data-theme", storedTheme);
+  } catch (e) {}
+</script>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 32 32">
+        <defs><linearGradient id="dtdMark" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4636E3" /><stop offset="1" stop-color="#7C3AED" /></linearGradient></defs>
+        <rect width="32" height="32" rx="8" fill="url(#dtdMark)" />
+        <circle cx="9.5" cy="22" r="2.8" fill="#FAF9F6" />
+        <path d="M12.5 19.5l4.5-4.5" stroke="#FAF9F6" stroke-width="2.4" stroke-linecap="round" fill="none" />
+        <path d="M17 11.5l3.2 3.2 6-7" stroke="#FAF9F6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      </svg>
+    </span>
+    <div class="brand-text">
+      <span class="brand-name">Dot to Deal</span>
+      <span class="brand-tag">Scan · Say · Price</span>
+    </div>
+  </div>
+  <a class="powered-by" href="https://misanmorrison.com/" target="_blank" rel="noopener"><span>Powered by</span> <strong>Misan Morrison</strong></a>
+  <nav class="tabs" role="tablist" aria-label="Dot to Deal sections">
+    <button class="tab-btn is-active" data-tab="guide" role="tab" aria-selected="true">How to Use</button>
+    <button class="tab-btn" data-tab="shortlist" role="tab" aria-selected="false">Shortlist</button>
+    <button class="tab-btn" data-tab="replies" role="tab" aria-selected="false">Replies</button>
+    <button class="tab-btn" data-tab="ratecard" role="tab" aria-selected="false">Rate Card</button>
+  </nav>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark theme" title="Switch theme">
+    <svg id="themeIconSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    <svg id="themeIconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+  </button>
+</header>
+
+<main class="app">
+
+<!-- ============================ HOW TO USE ============================ -->
+<section class="panel is-active" id="panel-guide">
+  <div class="panel-head">
+    <h1>Dot to Deal</h1>
+    <p>ProfitMaps AI shows a business owner the red dots on their map. It leaves three jobs to you: choosing who to scan, having the conversation, and setting your price. This app does those three jobs. Start with <strong>Shortlist</strong> if you haven't scanned anyone yet, <strong>Replies</strong> if an owner has answered, or <strong>Rate Card</strong> if they asked "how much?".</p>
+  </div>
+  <div class="guide">
+    <div class="guide-section guide-first">
+      <h2>Before you start</h2>
+      <p>You need nothing but this page. Every tool works from what you type in and gives you text you can copy. Each tool has the same buttons: <span class="ui-ref">Save</span> keeps the run, <span class="ui-ref">Copy</span> copies the text, and under every tool a saved list has <span class="ui-ref">Open</span> (puts the inputs and result back so you can change and rerun) and <span class="ui-ref">Delete</span>.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2><span class="guide-number">1</span> Shortlist — who to scan</h2>
+      <p>Pick the businesses worth your scan credits before you spend them.</p>
+      <h3>Prospect Scorecard</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Shortlist</span>, then <span class="ui-ref">Prospect Scorecard</span>.</li>
+        <li>Look the business up on Google Maps for a minute. Fill in <span class="ui-ref">Business name</span>, <span class="ui-ref">Niche</span>, <span class="ui-ref">Google reviews</span>, <span class="ui-ref">Website</span> and the other fields.</li>
+        <li>Press <span class="ui-ref">Score this business</span> for a 0–100 score and a tier.</li>
+        <li>Press <span class="ui-ref">Save</span>. Every saved scorecard becomes part of your shortlist, which the Scan Queue reads.</li>
+      </ol>
+      <h3>Keyword Pair Picker</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Keyword Pair Picker</span>. Enter the business, niche, town, and how many keywords your plan allows (<span class="ui-ref">Keywords you can scan</span>).</li>
+        <li>Press <span class="ui-ref">Pick my keywords</span>. You get the best phrases with a reason for each, and the ones it left out.</li>
+        <li><span class="ui-ref">Save</span> it. If the business name matches a saved scorecard, the Scan Queue shows these keywords against it.</li>
+      </ol>
+      <h3>Credit-Safe Scan Queue</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Credit-Safe Scan Queue</span>. Enter <span class="ui-ref">Credit balance</span>, <span class="ui-ref">Grid size</span> and your plan's <span class="ui-ref">Business cap</span>.</li>
+        <li>If you expect to win clients on recurring scans, fill <span class="ui-ref">Clients on recurring scans</span> so those credits are held back first.</li>
+        <li>Press <span class="ui-ref">Build my scan queue</span>. You get the order to scan in, what each scan costs, and what you can't afford yet.</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2><span class="guide-number">2</span> Replies — what to say</h2>
+      <p>Open <span class="ui-ref">Replies</span>. The <span class="ui-ref">Scan facts</span> card at the top is shared by all three tools. Fill it once from your ProfitMaps AI scan: spots in the top 3, spots at 4–10, 11–20 and not found, plus the competitor that beats them most.</p>
+      <h3>Objection Responder</h3>
+      <ol>
+        <li>Paste the owner's reply into <span class="ui-ref">What the owner said</span>.</li>
+        <li>Press <span class="ui-ref">Write my reply</span>. It tells you what kind of reply it is and writes your answer using your scan numbers. If they asked to stop, it writes a polite exit instead of a pitch.</li>
+      </ol>
+      <h3>Follow-Up Cadence Builder</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Follow-Up Cadence Builder</span>. Set <span class="ui-ref">First message sent</span>, <span class="ui-ref">Main channel</span> and <span class="ui-ref">Owner type</span>.</li>
+        <li>Press <span class="ui-ref">Build my follow-up plan</span> for five dated touches with a draft for each. After you <span class="ui-ref">Save</span> plans, the <span class="ui-ref">Due today</span> card lists whatever is due across all of them.</li>
+      </ol>
+      <h3>Five-Minute Map Walk</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Five-Minute Map Walk</span>, set <span class="ui-ref">What worries them most</span> and how their reviews compare.</li>
+        <li>Press <span class="ui-ref">Build my walk-through</span> for a timed five-minute agenda, the two fixes to lead with, and a shorter version if you only get two minutes.</li>
+      </ol>
+    </div>
+
+    <div class="guide-section">
+      <h2><span class="guide-number">3</span> Rate Card — what to charge</h2>
+      <h3>Fix Price Calculator</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Rate Card</span>, then <span class="ui-ref">Fix Price Calculator</span>. Choose <span class="ui-ref">Niche</span>, <span class="ui-ref">What you're selling</span> (one-time, monthly fix, or monthly report), and <span class="ui-ref">Market size</span>.</li>
+        <li>Enter <span class="ui-ref">Spots in the top 3 (%)</span> from the scan, plus your scan and time costs.</li>
+        <li>Press <span class="ui-ref">Calculate my price</span> for a low, target and high quote and a floor you shouldn't go under.</li>
+      </ol>
+      <h3>Clients-to-Goal Planner</h3>
+      <ol>
+        <li>Open <span class="ui-ref">Clients-to-Goal Planner</span>. Enter <span class="ui-ref">Monthly income goal</span> and how many months you give yourself.</li>
+        <li>Press <span class="ui-ref">Plan my path</span> for the clients you must win per month, the businesses to message each week, and the credits that costs. Prices fill in from the calculator when you've used it.</li>
+      </ol>
+      <h3>One-Page Offer Sheet</h3>
+      <ol>
+        <li>Open <span class="ui-ref">One-Page Offer Sheet</span>, add your company name, the prospect and the scan numbers.</li>
+        <li>Press <span class="ui-ref">Build my offer sheet</span>, then <span class="ui-ref">Print</span> to save it as a PDF or send it. It is a one-page pricing sheet, not a contract.</li>
+      </ol>
+    </div>
+
+    <div class="guide-section guide-note">
+      <h2>One thing to know</h2>
+      <p>Everything you enter and save stays in this browser on this device. There is no account and nothing is sent anywhere. Clearing your browser data or switching devices means starting fresh, so copy anything you want to keep. Dot to Deal never promises rankings, and neither should you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SHORTLIST ============================ -->
+<section class="panel" id="panel-shortlist">
+  <div class="panel-head">
+    <h1>Shortlist</h1>
+    <p>Spend scan credits only on businesses likely to say yes. Score them, pick the right keywords, then build a queue that fits your balance.</p>
+  </div>
+  <div class="subtabs" role="tablist" aria-label="Shortlist tools">
+    <button class="subtab-btn is-active" data-tool="scorecard">Prospect Scorecard</button>
+    <button class="subtab-btn" data-tool="keywords">Keyword Pair Picker</button>
+    <button class="subtab-btn" data-tool="queue">Credit-Safe Scan Queue</button>
+  </div>
+
+  <section class="tool is-active" id="tool-scorecard">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="field"><label for="sc-name">Business name</label><input id="sc-name" type="text" data-f="name" placeholder="Summit Plumbing Co." /></div>
+        <div class="row2">
+          <div class="field"><label for="sc-niche">Niche</label><select id="sc-niche" data-f="niche" class="niche-select"></select></div>
+          <div class="field"><label for="sc-town">Town <span class="optional">(optional)</span></label><input id="sc-town" type="text" data-f="town" placeholder="Reno" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="sc-reviews">Google reviews</label><input id="sc-reviews" type="number" min="0" data-f="reviews" placeholder="e.g. 14" /></div>
+          <div class="field"><label for="sc-rating">Star rating</label>
+            <select id="sc-rating" data-f="rating"><option value="0">Not sure</option><option value="3.5">Under 4.0</option><option value="4.1">4.0 – 4.2</option><option value="4.4">4.3 – 4.4</option><option value="4.7">4.5 or higher</option></select></div>
+        </div>
+        <div class="field"><label for="sc-website">Website</label>
+          <select id="sc-website" data-f="website"><option value="none">No website</option><option value="weak">Old, slow or thin</option><option value="good">Solid, current site</option></select></div>
+        <div class="field"><label for="sc-activity">Recent activity on their Google profile</label>
+          <select id="sc-activity" data-f="activity"><option value="no">No recent posts or photos</option><option value="some">A few</option><option value="yes">Active and current</option></select></div>
+        <div class="field"><label for="sc-comp">Competitors nearby with 100+ reviews</label>
+          <select id="sc-comp" data-f="comp"><option value="few">Few</option><option value="some">Some</option><option value="many">Many</option></select></div>
+        <div class="field"><label for="sc-reach">Best way to reach the owner</label>
+          <select id="sc-reach" data-f="reach"><option value="inperson">In person (I can walk in)</option><option value="phone">Phone</option><option value="email">Email or contact form</option><option value="none">No way yet</option></select></div>
+        <button class="primary-btn" data-act="generate" id="gen-scorecard">Score this business</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-keywords">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="field"><label for="kw-biz">Business name <span class="optional">(optional)</span></label><input id="kw-biz" type="text" data-f="biz" placeholder="Summit Plumbing Co." /></div>
+        <div class="row2">
+          <div class="field"><label for="kw-niche">Niche</label><select id="kw-niche" data-f="niche" class="niche-select"></select></div>
+          <div class="field"><label for="kw-town">Town</label><input id="kw-town" type="text" data-f="town" placeholder="Reno" /></div>
+        </div>
+        <div class="field"><label for="kw-service">A specific service they sell <span class="optional">(optional)</span></label><input id="kw-service" type="text" data-f="service" placeholder="water heater repair" /></div>
+        <div class="row2">
+          <div class="field"><label for="kw-emerg">Do they take urgent / after-hours calls?</label><select id="kw-emerg" data-f="emergency"><option value="yes">Yes</option><option value="no">No</option></select></div>
+          <div class="field"><label for="kw-goal">What do they want most?</label><select id="kw-goal" data-f="goal"><option value="calls">More calls this week</option><option value="jobs">Bigger jobs</option><option value="new">More new customers</option></select></div>
+        </div>
+        <div class="field"><label for="kw-count">Keywords you can scan</label><select id="kw-count" data-f="count"><option value="1">1</option><option value="2" selected>2 (Basic plan)</option><option value="3">3</option><option value="5">5 (Gold plan)</option></select></div>
+        <button class="primary-btn" data-act="generate" id="gen-keywords">Pick my keywords</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-queue">
+    <div class="workspace">
+      <div class="form-card">
+        <p class="note" id="queueNote">Loading your shortlist…</p>
+        <div class="row2">
+          <div class="field"><label for="q-balance">Credit balance</label><input id="q-balance" type="number" min="0" data-f="balance" placeholder="e.g. 250" /></div>
+          <div class="field"><label for="q-grid">Grid size</label><select id="q-grid" data-f="grid"><option value="25">5×5 (25 credits)</option><option value="49">7×7 (49 credits)</option><option value="81">9×9 (81 credits)</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="q-kw">Keywords per business</label><select id="q-kw" data-f="kw"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="5">5</option></select></div>
+          <div class="field"><label for="q-cap">Business cap</label><select id="q-cap" data-f="cap"><option value="10">10 (Basic)</option><option value="50">50 (Gold)</option><option value="unlimited">Unlimited (Platinum)</option></select></div>
+        </div>
+        <div class="field"><label for="q-min">Skip businesses scoring below</label><input id="q-min" type="number" min="0" max="100" data-f="minScore" value="35" /></div>
+        <div class="row2">
+          <div class="field"><label for="q-rc">Clients on recurring scans</label><input id="q-rc" type="number" min="0" data-f="recurClients" value="0" /></div>
+          <div class="field"><label for="q-cad">Recurring cadence</label><select id="q-cad" data-f="cadence"><option value="monthly">Monthly</option><option value="fortnightly">Every 2 weeks</option><option value="weekly">Weekly</option></select></div>
+        </div>
+        <button class="primary-btn" data-act="generate" id="gen-queue">Build my scan queue</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============================ REPLIES ============================ -->
+<section class="panel" id="panel-replies">
+  <div class="panel-head">
+    <h1>Replies</h1>
+    <p>Know exactly what to say after they answer. Fill in your scan facts once; all three tools use them.</p>
+  </div>
+  <div class="form-card facts-card" id="repliesFacts">
+    <div class="facts-title">Scan facts <span class="optional">(from your ProfitMaps AI scan)</span></div>
+    <div class="row3">
+      <div class="field"><label for="f-biz">Business name</label><input id="f-biz" type="text" data-f="biz" placeholder="Summit Plumbing Co." /></div>
+      <div class="field"><label for="f-owner">Owner's first name</label><input id="f-owner" type="text" data-f="owner" placeholder="Dana" /></div>
+      <div class="field"><label for="f-service">What they do</label><input id="f-service" type="text" data-f="service" placeholder="plumber" /></div>
+    </div>
+    <div class="row3">
+      <div class="field"><label for="f-town">Town</label><input id="f-town" type="text" data-f="town" placeholder="Reno" /></div>
+      <div class="field"><label for="f-comp">Competitor beating them most</label><input id="f-comp" type="text" data-f="competitor" placeholder="Reno Rooter" /></div>
+      <div class="field"><label for="f-total">Total spots scanned</label><input id="f-total" type="number" min="1" data-f="total" value="25" /></div>
+    </div>
+    <div class="row4">
+      <div class="field"><label for="f-top3">Top 3</label><input id="f-top3" type="number" min="0" data-f="top3" value="0" /></div>
+      <div class="field"><label for="f-hard">Hard to find (4–10)</label><input id="f-hard" type="number" min="0" data-f="hard" value="0" /></div>
+      <div class="field"><label for="f-buried">Buried (11–20)</label><input id="f-buried" type="number" min="0" data-f="buried" value="0" /></div>
+      <div class="field"><label for="f-nf">Not found</label><input id="f-nf" type="number" min="0" data-f="notfound" value="0" /></div>
+    </div>
+  </div>
+  <div class="subtabs" role="tablist" aria-label="Replies tools">
+    <button class="subtab-btn is-active" data-tool="objection">Objection Responder</button>
+    <button class="subtab-btn" data-tool="cadence">Follow-Up Cadence Builder</button>
+    <button class="subtab-btn" data-tool="mapwalk">Five-Minute Map Walk</button>
+  </div>
+
+  <section class="tool is-active" id="tool-objection">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="field"><label for="ob-text">What the owner said</label><textarea id="ob-text" data-f="text" rows="6" placeholder="Paste their reply here…"></textarea></div>
+        <div class="field"><label for="ob-tone">Your tone</label><select id="ob-tone" data-f="tone"><option value="friendly">Friendly</option><option value="direct">Short and direct</option></select></div>
+        <div class="field"><label for="ob-quote">Your price <span class="optional">(optional — used if they ask)</span></label><input id="ob-quote" type="text" data-f="quote" placeholder="$450 per month" /></div>
+        <div class="field"><label for="ob-today">Today</label><input id="ob-today" type="date" data-f="today" /></div>
+        <button class="primary-btn" data-act="generate" id="gen-objection">Write my reply</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-cadence">
+    <div class="due-card output-card" id="dueCard"><div class="output-head"><span class="output-label">Due today</span></div><div id="dueList"></div></div>
+    <div class="workspace">
+      <div class="form-card">
+        <div class="field"><label for="cd-start">First message sent</label><input id="cd-start" type="date" data-f="start" /></div>
+        <div class="field"><label for="cd-channel">Main channel</label><select id="cd-channel" data-f="channel"><option value="email">Email</option><option value="dm">Social DM</option><option value="text">Text message</option><option value="phone">Phone</option></select></div>
+        <div class="field"><label for="cd-temp">Owner type</label><select id="cd-temp" data-f="temp"><option value="busy">Busy — always on a job</option><option value="skeptic">Skeptical — wants proof</option><option value="curious">Curious — likes tech</option></select></div>
+        <div class="field"><label for="cd-today">Today</label><input id="cd-today" type="date" data-f="today" /></div>
+        <button class="primary-btn" data-act="generate" id="gen-cadence">Build my follow-up plan</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-mapwalk">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="field"><label for="mw-worry">What worries them most</label><select id="mw-worry" data-f="worry"><option value="calls">Not enough calls</option><option value="competitors">A competitor is winning</option><option value="looks_fine">"I look fine on Google"</option><option value="unsure">Not sure yet</option></select></div>
+        <div class="field"><label for="mw-reviews">Their reviews vs. the top competitor</label><select id="mw-reviews" data-f="reviews"><option value="far">Far fewer</option><option value="some">Somewhat fewer</option><option value="even">About even</option><option value="ahead">They're ahead</option></select></div>
+        <div class="row2">
+          <div class="field"><label for="mw-niche">Niche</label><select id="mw-niche" data-f="niche" class="niche-select"></select></div>
+          <div class="field"><label for="mw-ticket">One new customer is worth ($)</label><input id="mw-ticket" type="number" min="0" data-f="ticket" placeholder="auto from niche" /></div>
+        </div>
+        <button class="primary-btn" data-act="generate" id="gen-mapwalk">Build my walk-through</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============================ RATE CARD ============================ -->
+<section class="panel" id="panel-ratecard">
+  <div class="panel-head">
+    <h1>Rate Card</h1>
+    <p>Put a defensible price on the fix before they ask "how much?". Price it, plan the clients you need, then hand over a one-page offer.</p>
+  </div>
+  <div class="subtabs" role="tablist" aria-label="Rate Card tools">
+    <button class="subtab-btn is-active" data-tool="pricecalc">Fix Price Calculator</button>
+    <button class="subtab-btn" data-tool="goalplan">Clients-to-Goal Planner</button>
+    <button class="subtab-btn" data-tool="offersheet">One-Page Offer Sheet</button>
+  </div>
+
+  <section class="tool is-active" id="tool-pricecalc">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="row2">
+          <div class="field"><label for="pc-niche">Niche</label><select id="pc-niche" data-f="niche" class="niche-select"></select></div>
+          <div class="field"><label for="pc-scope">What you're selling</label><select id="pc-scope" data-f="scope"><option value="A">One-time fix</option><option value="B" selected>Monthly fix and upkeep</option><option value="C">Monthly report only</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="pc-market">Market size</label><select id="pc-market" data-f="market"><option value="small">Small town (under 50k)</option><option value="mid" selected>Mid-size (50k – 250k)</option><option value="metro">Metro (over 250k)</option></select></div>
+          <div class="field"><label for="pc-top3">Spots in the top 3 (%)</label><input id="pc-top3" type="number" min="0" max="100" data-f="top3pct" placeholder="e.g. 20" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="pc-grid">Grid size</label><select id="pc-grid" data-f="points"><option value="25">5×5 (25 credits)</option><option value="49">7×7 (49 credits)</option><option value="81">9×9 (81 credits)</option></select></div>
+          <div class="field"><label for="pc-scans">Scans per month (or in total, if one-time)</label><input id="pc-scans" type="number" min="0" data-f="scans" value="1" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="pc-credit">Your cost per credit ($)</label><input id="pc-credit" type="number" min="0" step="0.01" data-f="perCredit" value="0.05" /></div>
+          <div class="field"><label for="pc-hours">Hours of work</label><input id="pc-hours" type="number" min="0" step="0.5" data-f="hours" value="6" /></div>
+        </div>
+        <div class="field"><label for="pc-rate">What an hour of your time is worth ($)</label><input id="pc-rate" type="number" min="0" data-f="hourly" value="40" /></div>
+        <p class="note">The cost per credit is your own estimate (your plan's credit pool divided by what you paid). Nothing here is a vendor price.</p>
+        <button class="primary-btn" data-act="generate" id="gen-pricecalc">Calculate my price</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-goalplan">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="row2">
+          <div class="field"><label for="gp-goal">Monthly income goal ($)</label><input id="gp-goal" type="number" min="0" data-f="goal" placeholder="e.g. 3000" /></div>
+          <div class="field"><label for="gp-months">Months to get there</label><input id="gp-months" type="number" min="1" max="24" data-f="months" value="3" /></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label for="gp-sa">% one-time fixes</label><input id="gp-sa" type="number" min="0" data-f="shareA" value="20" /></div>
+          <div class="field"><label for="gp-sb">% monthly fixes</label><input id="gp-sb" type="number" min="0" data-f="shareB" value="60" /></div>
+          <div class="field"><label for="gp-sc">% monthly reports</label><input id="gp-sc" type="number" min="0" data-f="shareC" value="20" /></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label for="gp-pa">One-time price ($)</label><input id="gp-pa" type="number" min="0" data-f="priceA" placeholder="fixed or from calculator" /></div>
+          <div class="field"><label for="gp-pb">Monthly fix price ($)</label><input id="gp-pb" type="number" min="0" data-f="priceB" /></div>
+          <div class="field"><label for="gp-pc">Report price ($)</label><input id="gp-pc" type="number" min="0" data-f="priceC" /></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label for="gp-reply">Owners who reply (%)</label><input id="gp-reply" type="number" min="1" max="100" data-f="reply" value="15" /></div>
+          <div class="field"><label for="gp-close">Replies that become clients (%)</label><input id="gp-close" type="number" min="1" max="100" data-f="close" value="25" /></div>
+          <div class="field"><label for="gp-churn">Monthly clients lost (%)</label><input id="gp-churn" type="number" min="0" max="100" data-f="churn" value="8" /></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label for="gp-grid">Grid size</label><select id="gp-grid" data-f="points"><option value="25">5×5 (25)</option><option value="49">7×7 (49)</option><option value="81">9×9 (81)</option></select></div>
+          <div class="field"><label for="gp-kw">Keywords per scan</label><input id="gp-kw" type="number" min="1" data-f="kw" value="2" /></div>
+          <div class="field"><label for="gp-credit">Cost per credit ($)</label><input id="gp-credit" type="number" min="0" step="0.01" data-f="perCredit" value="0.05" /></div>
+        </div>
+        <button class="primary-btn" data-act="generate" id="gen-goalplan">Plan my path</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-offersheet">
+    <div class="workspace">
+      <div class="form-card">
+        <div class="row2">
+          <div class="field"><label for="os-you">Your company name</label><input id="os-you" type="text" data-f="you" placeholder="Your Agency" /></div>
+          <div class="field"><label for="os-contact">Your contact line</label><input id="os-contact" type="text" data-f="contact" placeholder="you@email.com · 555-0100" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="os-biz">Prospect business</label><input id="os-biz" type="text" data-f="biz" placeholder="Summit Plumbing Co." /></div>
+          <div class="field"><label for="os-owner">Owner's first name</label><input id="os-owner" type="text" data-f="owner" placeholder="Dana" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="os-service">Search they want to win</label><input id="os-service" type="text" data-f="service" placeholder="plumber near me" /></div>
+          <div class="field"><label for="os-town">Town</label><input id="os-town" type="text" data-f="town" placeholder="Reno" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="os-top3">Spots in the top 3</label><input id="os-top3" type="number" min="0" data-f="top3" /></div>
+          <div class="field"><label for="os-total">Total spots scanned</label><input id="os-total" type="number" min="1" data-f="total" value="25" /></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label for="os-pa">One-time ($)</label><input id="os-pa" type="number" min="0" data-f="priceA" /></div>
+          <div class="field"><label for="os-pb">Monthly fix ($)</label><input id="os-pb" type="number" min="0" data-f="priceB" /></div>
+          <div class="field"><label for="os-pc">Report ($)</label><input id="os-pc" type="number" min="0" data-f="priceC" /></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="os-rec">Recommend</label><select id="os-rec" data-f="rec"><option value="A">One-time fix</option><option value="B" selected>Monthly fix</option><option value="C">Monthly report</option></select></div>
+          <div class="field"><label for="os-valid">Offer valid for (days)</label><input id="os-valid" type="number" min="1" data-f="valid" value="14" /></div>
+        </div>
+        <div class="field"><label for="os-today">Today</label><input id="os-today" type="date" data-f="today" /></div>
+        <button class="primary-btn" data-act="generate" id="gen-offersheet">Build my offer sheet</button>
+      </div>
+      <div class="right"></div>
+    </div>
+  </section>
+</section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
+</html>
