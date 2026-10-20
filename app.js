@@ -328,7 +328,7 @@ function factsOf(f) {
   const top3 = clamp(n(f.top3, 0), 0, total);
   return {
     biz: (f.biz || "").trim() || "your business",
-    owner: (f.owner || "").trim() || "there",
+    owner: (f.owner || "").trim(),
     service: (f.service || "").trim() || "what you do",
     town: (f.town || "").trim() || "town",
     competitor: (f.competitor || "").trim() || "a competitor",
@@ -337,6 +337,19 @@ function factsOf(f) {
     red: total - top3,
     redPct: Math.round(((total - top3) / total) * 100),
     topPct: Math.round((top3 / total) * 100),
+  };
+}
+const upFirst = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+// address forms that read naturally whether or not the owner's name was entered
+function addr(f) {
+  return {
+    ...f,
+    to: f.owner ? `, ${f.owner}` : "",
+    hi: f.owner ? `Hi ${f.owner}` : "Hi there",
+    callee: f.owner || "the owner",
+    Biz: upFirst(f.biz),
+    Competitor: upFirst(f.competitor),
+    search: f.service === "what you do" ? "that search" : `"${f.service}"`,
   };
 }
 
@@ -381,9 +394,9 @@ function computeScore(i) {
     niche: niche.label, town: (i.town || "").trim(),
     score, tier: tier.label, tierKey: tier.key, advice: tier.advice,
     factors: [
-      { label: "Likely to be invisible", pts: gap, max: 40, note: `${reviews} reviews, ${({ none: "no website", weak: "a weak website", good: "a solid website" })[i.website] || "unknown website"}, ${({ no: "no recent activity", some: "some activity", yes: "an active profile" })[i.activity] || "unknown activity"}.` },
+      { label: "Likely to be invisible", pts: gap, max: 40, note: `${plural(reviews, "review")}, ${({ none: "no website", weak: "a weak website", good: "a solid website" })[i.website] || "unknown website"}, ${({ no: "no recent activity", some: "some activity", yes: "an active profile" })[i.activity] || "unknown activity"}.` },
       { label: "Crowded search", pts: crowd, max: 20, note: `${niche.label} is a ${niche.crowd >= 8 ? "very" : niche.crowd >= 6 ? "fairly" : "less"} competitive niche, with ${i.comp || "some"} strong competitors nearby.` },
-      { label: "Can pay and can be reached", pts: pay, max: 40, note: `One ${niche.label.toLowerCase()} customer is worth ${niche.value >= 8 ? "a lot" : niche.value >= 5 ? "a fair amount" : "a modest amount"}; ${reviews >= 10 ? "they look like a real, operating business" : "few reviews make that harder to judge"}; reach: ${({ inperson: "in person", phone: "by phone", email: "by email", none: "no route yet" })[i.reach] || "unknown"}${roomPts ? "; their rating leaves room for a story" : ""}.` },
+      { label: "Can pay and can be reached", pts: pay, max: 40, note: `One ${niche.noun} customer is worth ${niche.value >= 8 ? "a lot" : niche.value >= 5 ? "a fair amount" : "a modest amount"}; ${reviews >= 10 ? "they look like a real, operating business" : "few reviews make that harder to judge"}; reach: ${({ inperson: "in person", phone: "by phone", email: "by email", none: "no route yet" })[i.reach] || "unknown"}${roomPts ? "; their rating leaves room for a story" : ""}.` },
     ],
   };
 }
@@ -613,48 +626,48 @@ function classifyReply(raw) {
 
 const REPLIES = {
   optout: {
-    friendly: (f) => `No problem at all, ${f.owner} — I won't contact you again. Wishing ${f.biz} a great season.`,
-    direct: (f) => `Understood, ${f.owner}. I won't contact you again. All the best with ${f.biz}.`,
+    friendly: (f) => `No problem at all${f.to} — I won't contact you again. Wishing ${f.biz} a great season.`,
+    direct: (f) => `Understood${f.to}. I won't contact you again. All the best with ${f.biz}.`,
     tip: "Stop here. Note them as do-not-contact and don't schedule any more follow-ups.",
   },
   guarantee: {
-    friendly: (f) => `Fair question, ${f.owner} — and I'd rather be honest than promise something nobody can. Nobody can guarantee a #1 spot; rankings depend on a lot of things.\n\nWhat I can promise is the process: ${f.biz} is in the top 3 at ${f.top3} of ${f.total} spots today. I'll do the specific fixes in the plan, then rescan next month so you can see on the same map exactly what changed.`,
+    friendly: (f) => `Fair question${f.to} — and I'd rather be honest than promise something nobody can. Nobody can guarantee a #1 spot; rankings depend on a lot of things.\n\nWhat I can promise is the process: ${f.biz} is in the top 3 at ${f.top3} of ${f.total} spots today. I'll do the specific fixes in the plan, then rescan next month so you can see on the same map exactly what changed.`,
     direct: (f) => `I can't guarantee a ranking and neither can anyone honest. What I can do: fix what the scan shows (top 3 at ${f.top3} of ${f.total} spots today), then rescan next month so you can see the change on the same map.`,
     tip: "Never promise a position. Offer the rescan as the proof, because that's what the product supports.",
   },
   price: {
-    friendly: (f, q) => `Happy to give you a straight number, ${f.owner}. For ${f.biz} the first step is fixing the red areas the map shows (${f.red} of ${f.total} spots). That's ${q.price}.\n\nWant me to start this week?`,
+    friendly: (f, q) => `Happy to give you a straight number${f.to}. For ${f.biz} the first step is fixing the red areas the map shows (${f.red} of ${f.total} spots). That's ${q.price}.\n\nWant me to start this week?`,
     direct: (f, q) => `${q.price}. That covers fixing the ${f.red} red spots around ${f.town} and a rescan to show the change. Want me to start this week?`,
     tip: "Say the price once, then stop talking. If you don't have a number yet, use the Fix Price Calculator in Rate Card.",
   },
   has_seo: {
-    friendly: (f) => `That's great, ${f.owner} — then this is easy to use as a second opinion. Forward the map to them and ask why ${f.biz} isn't in the top 3 at ${f.red} of ${f.total} spots around ${f.town}.\n\nIf they have a good answer, you've lost nothing. If they don't, I'm happy to help.`,
+    friendly: (f) => `That's great${f.to} — then this is easy to use as a second opinion. Forward the map to them and ask why ${f.biz} isn't in the top 3 at ${f.red} of ${f.total} spots around ${f.town}.\n\nIf they have a good answer, you've lost nothing. If they don't, I'm happy to help.`,
     direct: (f) => `Good. Send them the map and ask why ${f.biz} is missing from the top 3 at ${f.red} of ${f.total} spots. A good answer costs you nothing; if they don't have one, call me.`,
     tip: "Don't criticise their current provider. Position the map as a question for them to answer.",
   },
   looks_fine: {
-    friendly: (f) => `That's actually why I made it, ${f.owner}. When you search for ${f.biz} yourself, Google knows it's you, so you see the flattering version.\n\nThis map checks from ${f.total} spots around ${f.town}, the way a stranger would. ${f.biz} is in the top 3 at ${f.top3} of them. In the other ${f.red}, ${f.competitor} and others show up first.\n\nCan I walk you through it in five minutes?`,
+    friendly: (f) => `That's actually why I made it${f.to}. When you search for ${f.biz} yourself, Google knows it's you, so you see the flattering version.\n\nThis map checks from ${f.total} spots around ${f.town}, the way a stranger would. ${f.Biz} is in the top 3 at ${f.top3} of them. In the other ${f.red}, ${f.competitor} and others show up first.\n\nCan I walk you through it in five minutes?`,
     direct: (f) => `Fair — but you're searching from your own shop, where Google knows exactly who you are. The map checks from ${f.total} spots across ${f.town}: top 3 at ${f.top3}, buried or missing at ${f.buried + f.notfound}. Want the five-minute walk-through?`,
     tip: "Don't say they're wrong. Explain why what they see differs from what a stranger sees.",
   },
   how_works: {
-    friendly: (f) => `Sure, ${f.owner}. Quick version: each dot is a spot around ${f.town}. I searched "${f.service}" as if I were standing at that spot. Green means ${f.biz} showed up in the top 3; red means it didn't show up at all.\n\nYou're green at ${f.top3} and not green at ${f.red}. I can show you in five minutes if that's easier.`,
-    direct: (f) => `Each dot is a spot in ${f.town}. Green: ${f.biz} is in the top 3 for "${f.service}" from there. Red: it isn't. You're green at ${f.top3} of ${f.total}. Five minutes on a call and I'll show you where.`,
+    friendly: (f) => `Sure${f.to}. Quick version: each dot is a spot around ${f.town}. I searched ${f.search} as if I were standing at that spot. Green means ${f.biz} showed up in the top 3; red means it didn't show up at all.\n\nYou're green at ${f.top3} and not green at ${f.red}. I can show you in five minutes if that's easier.`,
+    direct: (f) => `Each dot is a spot in ${f.town}. Green: ${f.biz} is in the top 3 for ${f.search} from there. Red: it isn't. You're green at ${f.top3} of ${f.total}. Five minutes on a call and I'll show you where.`,
     tip: "Keep it to the dot metaphor. No SEO jargon.",
   },
   send_info: {
-    friendly: (f) => `Of course, ${f.owner}. The map is the information — here it is again: [your report link]. It shows ${f.biz} in the top 3 at ${f.top3} of ${f.total} spots around ${f.town}, and it has a plain-English plan on the last page.\n\nIf anything in it isn't clear, I'm glad to explain it.`,
+    friendly: (f) => `Of course${f.to}. The map is the information — here it is again: [your report link]. It shows ${f.biz} in the top 3 at ${f.top3} of ${f.total} spots around ${f.town}, and it has a plain-English plan on the last page.\n\nIf anything in it isn't clear, I'm glad to explain it.`,
     direct: (f) => `The map is the info: [your report link]. Top 3 at ${f.top3} of ${f.total} spots, with the plan on the last page. Tell me what's unclear.`,
     tip: "Resist sending a brochure. Send the report link again and ask for one question.",
   },
   not_now: {
-    friendly: (f, q) => `Totally understand, ${f.owner}. I'll leave it with you. The map isn't going anywhere: [your report link]. I'll check back on ${q.followDate}, and if the timing is still off, just say so and I'll leave you be.`,
+    friendly: (f, q) => `Totally understand${f.to}. I'll leave it with you. The map isn't going anywhere: [your report link]. I'll check back on ${q.followDate}, and if the timing is still off, just say so and I'll leave you be.`,
     direct: (f, q) => `No problem. I'll check back ${q.followDate}. Link stays live: [your report link].`,
     tip: "Agree to a date and put it in the Follow-Up Cadence Builder. Don't push twice.",
   },
   fallback: {
-    friendly: (f) => `Thanks for getting back to me, ${f.owner}. What's the most useful thing I can clear up about the map for ${f.biz}? It shows the top 3 at ${f.top3} of ${f.total} spots around ${f.town}, and I'm happy to go through any part of it.`,
-    direct: (f) => `Thanks, ${f.owner}. What would be most useful to clear up about the map? Top 3 at ${f.top3} of ${f.total} spots.`,
+    friendly: (f) => `Thanks for getting back to me${f.to}. What's the most useful thing I can clear up about the map for ${f.biz}? It shows the top 3 at ${f.top3} of ${f.total} spots around ${f.town}, and I'm happy to go through any part of it.`,
+    direct: (f) => `Thanks${f.to}. What would be most useful to clear up about the map? Top 3 at ${f.top3} of ${f.total} spots.`,
     tip: "When it's unclear, ask one open question instead of pitching.",
   },
 };
@@ -662,7 +675,7 @@ const REPLIES = {
 function buildReply(i) {
   const text = (i.text || "").trim();
   if (!text) return { error: "Paste what the owner said first" };
-  const f = factsOf(i.__facts);
+  const f = addr(factsOf(i.__facts));
   const cls = classifyReply(text);
   const tone = i.tone === "direct" ? "direct" : "friendly";
   const today = i.today || todayISO();
@@ -688,7 +701,7 @@ DEFS.push({
     <div class="msg-box">${escapeHtml(d.reply)}</div>
     <div class="tip"><b>Before you send:</b> ${escapeHtml(d.tip)}</div>`,
   text: (d) => d.reply,
-  entry: (d) => ({ name: `${d.owner === "there" ? d.biz : d.owner} — ${d.label}`, meta: d.biz }),
+  entry: (d) => ({ name: `${d.owner || d.biz} — ${d.label}`, meta: d.biz }),
 });
 
 /* ======================================================================
@@ -699,7 +712,7 @@ const CHANNEL_LABEL = { email: "Email", dm: "Social DM", text: "Text message", p
 const ALT_CHANNEL = { email: "phone", dm: "email", text: "phone", phone: "email" };
 
 function buildCadence(i) {
-  const f = factsOf(i.__facts);
+  const f = addr(factsOf(i.__facts));
   const start = i.start || todayISO();
   const today = i.today || todayISO();
   const ch = CHANNEL_LABEL[i.channel] ? i.channel : "email";
@@ -709,13 +722,13 @@ function buildCadence(i) {
   const extra1 = temp === "busy" ? " It takes 30 seconds to look at." : "";
   const extra2 = temp === "skeptic" ? "\nYou can check any dot yourself — happy to share the exact search and spot." : temp === "curious" ? "\nThe map updates every time we rescan, so you can watch it change." : "";
   const drafts = [
-    `Hi ${f.owner}, I ran a quick Google Maps check on ${f.biz}. In ${f.red} of ${f.total} spots around ${f.town}, people searching for ${f.service} can't find you in the top 3. Here's the map: [your report link].${extra1} Happy to walk you through it if it's useful.`,
-    `Hi ${f.owner}, just checking you saw the map I sent for ${f.biz}. The red areas are where customers searching for ${f.service} aren't finding you. Happy to explain in five minutes if that helps.${extra2}`,
+    `${f.hi}, I ran a quick Google Maps check on ${f.biz}. In ${f.red} of ${f.total} spots around ${f.town}, people searching for ${f.service} can't find you in the top 3. Here's the map: [your report link].${extra1} Happy to walk you through it if it's useful.`,
+    `${f.hi}, just checking you saw the map I sent for ${f.biz}. The red areas are where customers searching for ${f.service} aren't finding you. Happy to explain in five minutes if that helps.${extra2}`,
     alt === "phone"
-      ? `Call ${f.owner}: "Hi ${f.owner}, it's [your name]. I sent a map showing where ${f.biz} appears around ${f.town}. Do you have two minutes for me to point out the red spots?" If voicemail: leave your number and the one sentence above.`
-      : `Subject: The map for ${f.biz}\n\nHi ${f.owner}, I tried a different route in case my earlier note got buried. Here's the map: [your report link]. It's in the top 3 at ${f.top3} of ${f.total} spots — happy to explain the rest.`,
-    `Hi ${f.owner}, one thing I noticed: ${f.competitor} shows up first at spots where ${f.biz} doesn't. That's the gap I'd close first. Want the one-page version of the plan?`,
-    `Hi ${f.owner}, I don't want to crowd your inbox, so this is my last note about the ${f.biz} map. If it ever becomes a priority, the link still works: [your report link]. Wishing you a busy season.`,
+      ? `Call ${f.callee}: "${f.hi}, it's [your name]. I sent a map showing where ${f.biz} appears around ${f.town}. Do you have two minutes for me to point out the red spots?" If voicemail: leave your number and the one sentence above.`
+      : `Subject: The map for ${f.biz}\n\n${f.hi}, I tried a different route in case my earlier note got buried. Here's the map: [your report link]. It's in the top 3 at ${f.top3} of ${f.total} spots — happy to explain the rest.`,
+    `${f.hi}, one thing I noticed: ${f.competitor} shows up first at spots where ${f.biz} doesn't. That's the gap I'd close first. Want the one-page version of the plan?`,
+    `${f.hi}, I don't want to crowd your inbox, so this is my last note about this map. If it ever becomes a priority, the link still works: [your report link]. Wishing you a busy season.`,
   ];
   const meta = [
     ["First message", ch], ["Friendly nudge", ch], ["Change channel", alt], ["New angle", ch], ["Graceful close", ch],
@@ -766,7 +779,7 @@ DEFS.push({
    6. FIVE-MINUTE MAP WALK
    ====================================================================== */
 function buildWalk(i) {
-  const f = factsOf(i.__facts);
+  const f = addr(factsOf(i.__facts));
   const niche = nicheOf(i.niche);
   const ticket = n(i.ticket, 0) > 0 ? n(i.ticket, 0) : niche.ticket;
   const worry = i.worry || "unsure";
@@ -780,18 +793,18 @@ function buildWalk(i) {
     : { key: "opener", title: "Start at the dot nearest their shop", weight: 100, talk: `Be honest that even the closest dot isn't green. "Even right next to your shop, a stranger searching ${f.service} doesn't see ${f.biz} in the top 3."` };
   const cluster = {
     key: "cluster", title: "Show the biggest red area", weight: Math.round(redShare * 100),
-    talk: `${f.biz} is missing from the first page at ${f.notfound} ${f.notfound === 1 ? "spot" : "spots"} and buried at 11–20 at ${f.buried}. "Customers standing here searching for ${f.service} don't see you."`,
+    talk: `${f.Biz} is missing from the first page at ${plural(f.notfound, "spot")} and buried at 11–20 at ${plural(f.buried, "spot")}. "Customers standing here searching for ${f.service} don't see you."`,
   };
   const competitor = {
     key: "competitor", title: "Name who is winning instead", weight: 60 + (f.competitor !== "a competitor" ? 20 : 0) + (rv === "far" ? 10 : 0) + (worry === "competitors" ? 25 : 0),
-    talk: `${f.competitor} is the name that keeps showing up where ${f.biz} doesn't. "Same town, same search — they get the call."`,
+    talk: `${f.Competitor} is the name that keeps showing up where ${f.biz} doesn't. "Same town, same search — they get the call."`,
   };
   const moneyStep = {
     key: "money", title: "Put a number on it", weight: 40 + niche.value * 4 + (worry === "calls" ? 20 : 0),
     talk: `One new customer is worth about ${money(ticket)}. "If those ${f.red} red spots cost you even one customer a month, that's roughly ${money(ticket * 12)} a year."`,
   };
   const fixes = [
-    { key: "profile", title: "List every service on the Google profile", weight: Math.round(40 + hardShare * 50), talk: `The ${plural(f.hard, "spot")} at 4–10 are close to the top 3. "A fuller profile is the quickest thing to fix."` },
+    { key: "profile", title: "List every service on the Google profile", weight: Math.round(40 + hardShare * 50), talk: f.hard > 0 ? `${upFirst(plural(f.hard, "spot"))} at 4–10 ${f.hard === 1 ? "is" : "are"} close to the top 3. "A fuller profile is the quickest thing to fix."` : `"A complete profile is the cheapest thing to fix, and it's where Google starts."` },
     { key: "pages", title: "Add a page for each town they serve", weight: Math.round(40 + lowShare * 50), talk: `The buried and missing spots are places Google doesn't connect them to. "A page for each town tells Google where you work."` },
     { key: "posts", title: "Post a short update every week", weight: 35 + (rv === "ahead" ? 10 : 0), talk: `"Fresh weekly posts show Google the business is active."` },
     { key: "reviews", title: "Ask recent customers for reviews", weight: 30 + ({ far: 40, some: 20, even: 5, ahead: 0 })[rv], talk: `${rv === "far" || rv === "some" ? `Their reviews are behind ${f.competitor}'s. ` : ""}"Reviews are the easiest thing a customer can do for you."` },
@@ -952,8 +965,8 @@ DEFS.push({
   },
   compute: planGoal,
   render: (d) => `
-    <div class="headline-row"><div class="big-num">${d.N}<small> new clients a month</small></div></div>
-    <p class="out-p">To earn ${money(d.goal)} a month by month ${d.months}, win about <strong>${d.N}</strong> new clients every month (mix: ${d.mix.a}% one-time, ${d.mix.b}% monthly fix, ${d.mix.c}% monthly report).</p>
+    <div class="headline-row"><div class="big-num">${d.N}<small> new ${d.N === 1 ? "client" : "clients"} a month</small></div></div>
+    <p class="out-p">To earn ${money(d.goal)} a month by month ${d.months}, win about <strong>${d.N}</strong> new ${d.N === 1 ? "client" : "clients"} every month (mix: ${d.mix.a}% one-time, ${d.mix.b}% monthly fix, ${d.mix.c}% monthly report).</p>
     <div class="tbl-wrap"><table class="tbl"><tbody>
       <tr><td>Replies you need</td><td>${Math.ceil(d.replies)}</td></tr>
       <tr><td>Businesses to message each month</td><td>${Math.ceil(d.messages)}</td></tr>
@@ -995,9 +1008,11 @@ function buildOffer(i) {
 }
 
 function offerText(d) {
-  return [`${d.you} — a plan for ${d.biz}`, d.owner ? `Prepared for ${d.owner}` : "", `Today ${d.biz} is in the top 3 at ${d.top3} of ${d.total} spots around ${d.town} (${d.pct}%)${d.service ? ` when customers search "${d.service}"` : ""}.`, "",
-    ...d.tiers.map((t) => `${t.name}${t.rec ? " (recommended)" : ""} — ${money(t.price)} ${t.cadence}\n${t.items.map((x) => "  - " + x).join("\n")}`),
-    "", `Offer valid until ${d.validUntil}. Rankings depend on many things and are not guaranteed; we rescan so you can see the change.`, d.contact].filter((x) => x !== "").join("\n");
+  const head = [`${d.you} — a plan for ${d.biz}`, d.owner ? `Prepared for ${d.owner}` : ""].filter(Boolean).join("\n");
+  const finding = `Today ${d.biz} is in the top 3 at ${d.top3} of ${d.total} spots around ${d.town} (${d.pct}%)${d.service ? ` when customers search "${d.service}"` : ""}.`;
+  const tiers = d.tiers.map((t) => `${t.name}${t.rec ? " (recommended)" : ""} — ${money(t.price)} ${t.cadence}\n${t.items.map((x) => "  - " + x).join("\n")}`);
+  const foot = [`Offer valid until ${d.validUntil}. Rankings depend on many things and are not guaranteed; we rescan so you can see the change.`, d.contact].filter(Boolean).join("\n");
+  return [head, finding, ...tiers, foot].join("\n\n");
 }
 
 DEFS.push({
